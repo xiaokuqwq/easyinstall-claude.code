@@ -54,7 +54,7 @@ claude
 
 ## 安装失败排查
 
-- **权限错误(EACCES)**:参考 [npm 官方文档](https://docs.npmjs.com/resolving-eacces-permissions-errors)
+- **权限错误(EACCES)**:参考 [npm 官方文档](https://docs.npmjs.com/cli/v10/using-npm/resolving-eacces-permissions-errors-when-installing-packages-globally)
 - **`claude` 命令找不到**:打开一个新的终端窗口后再运行,使 PATH 生效
 
 ---
@@ -115,5 +115,5 @@ Non-China IPs (or undetermined results) use the official npm / Node default sour
 
 ## Troubleshooting
 
-- **Permission error (EACCES)**: see the [npm docs](https://docs.npmjs.com/resolving-eacces-permissions-errors)
+- **Permission error (EACCES)**: see the [npm docs](https://docs.npmjs.com/cli/v10/using-npm/resolving-eacces-permissions-errors-when-installing-packages-globally)
 - **`claude` command not found**: open a new terminal window so the updated PATH takes effect

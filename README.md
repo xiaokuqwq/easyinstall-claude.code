@@ -9,7 +9,7 @@
 - **自动检测系统**:Linux / macOS / Windows
 - **自动检测架构**:x64 / arm64 / armv7l(Unix)、x64 / arm64 / x86(Windows)
 - **自动检测中国 IP**:三段探测(Cloudflare trace → ipinfo 国家码 → google/镜像可达性),命中后自动启用镜像源
-- **自动安装 Node.js**:缺少 Node 18+ 时自动安装(Unix 用 fnm,Windows 用 MSI 静默安装,自动配置环境变量)
+- **自动安装 Node.js**:缺少 Node 18+ 时自动安装(直接下载 Node 二进制包,中国走镜像)
 - **全局安装** `@anthropic-ai/claude-code`,中国环境走 npmmirror 镜像
 
 ## 使用方法
@@ -45,7 +45,7 @@ claude
 
 ## 前置条件
 
-- **Linux / macOS**:需要 `curl`(用于网络探测和安装 fnm)
+- **Linux / macOS**:需要 `curl`(用于网络探测和下载 Node 包)
 - **Windows**:无额外依赖,脚本自动下载 MSI 安装 Node 并配置环境变量
 
 ## 已知限制
@@ -70,7 +70,7 @@ Cross-platform scripts that install [Claude Code](https://www.npmjs.com/package/
 - **OS detection**: Linux / macOS / Windows
 - **Architecture detection**: x64 / arm64 / armv7l (Unix), x64 / arm64 / x86 (Windows)
 - **China IP detection**: three-stage probe (Cloudflare trace → ipinfo country code → google/mirror reachability); mirror sources kick in on a match
-- **Auto-install Node.js**: installs Node 18+ when missing (fnm on Unix, MSI silent install on Windows with automatic PATH setup)
+- **Auto-install Node.js**: installs Node 18+ when missing (direct binary download, mirror-supported on both platforms)
 - **Global install** of `@anthropic-ai/claude-code`, via the npmmirror registry in China
 
 ## Usage
@@ -106,7 +106,7 @@ Non-China IPs (or undetermined results) use the official npm / Node default sour
 
 ## Prerequisites
 
-- **Linux / macOS**: `curl` (for network probes and installing fnm)
+- **Linux / macOS**: `curl` (for network probes and Node binary download)
 - **Windows**: no extra dependencies — MSI installer handles Node setup and PATH automatically
 
 ## Known limitations

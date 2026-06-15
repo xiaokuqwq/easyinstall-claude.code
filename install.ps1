@@ -1,7 +1,7 @@
 # One-click installer for Claude Code (Windows / PowerShell).
 # - Detects architecture
 # - Detects whether you're on a China IP and, if so, uses mirror sources
-# - Installs Node.js (direct zip download, mirror-supported) if it's missing
+# - Installs Node.js (MSI silent install, mirror-supported) if it's missing
 # - Installs @anthropic-ai/claude-code globally via npm
 #
 # Run in PowerShell:  irm <url>/install.ps1 | iex
@@ -14,7 +14,6 @@ $MinNodeMajor = 18
 $NpmMirror    = 'https://registry.npmmirror.com'
 $NodeDist     = 'https://nodejs.org/dist'
 $NodeMirror   = 'https://npmmirror.com/mirrors/node'
-$NodeInstDir  = "$env:LOCALAPPDATA\Nodejs"
 
 function Write-Info { param($m) Write-Host "[*] $m" -ForegroundColor Blue }
 function Write-Ok   { param($m) Write-Host "[+] $m" -ForegroundColor Green }
@@ -81,44 +80,37 @@ function Get-LtsVersion {
     Die "Failed to fetch Node.js LTS version from $baseUrl/index.json."
 }
 
-# --- install node via direct zip download -------------------------------------
+# --- install node via MSI silent install --------------------------------------
 function Install-Node {
     $arch = Get-Arch
     Write-Info "Node.js >= $MinNodeMajor not found. Downloading and installing..."
 
     $ver = Get-LtsVersion
-    $verNum = $ver -replace '^v',''   # "22.16.0"
     $baseUrl = if ($script:China) { $NodeMirror } else { $NodeDist }
-    $zipName = "node-$ver-win-$arch.zip"
-    $zipUrl  = "$baseUrl/$ver/$zipName"
-    $zipPath = "$env:TEMP\$zipName"
+    $msiName = "node-$ver-x64.msi"
+    if ($arch -eq 'arm64') { $msiName = "node-$ver-arm64.msi" }
+    $msiUrl  = "$baseUrl/$ver/$msiName"
+    $msiPath = "$env:TEMP\$msiName"
 
-    Write-Info "Downloading $zipUrl ..."
+    Write-Info "Downloading $msiUrl ..."
     try {
-        Invoke-WebRequest -Uri $zipUrl -OutFile $zipPath -UseBasicParsing -TimeoutSec 120
+        Invoke-WebRequest -Uri $msiUrl -OutFile $msiPath -UseBasicParsing -TimeoutSec 120
     } catch {
-        Die "Failed to download Node.js from $zipUrl. Check your network or install Node $MinNodeMajor+ manually from https://nodejs.org/en/download."
+        Die "Failed to download Node.js from $msiUrl. Check your network or install Node $MinNodeMajor+ manually from https://nodejs.org/en/download."
     }
 
-    # Extract to install dir
-    if (Test-Path $NodeInstDir) { Remove-Item $NodeInstDir -Recurse -Force }
-    Write-Info "Extracting to $NodeInstDir ..."
-    Expand-Archive -Path $zipPath -DestinationPath $env:TEMP\node_tmp -Force
-    # zip contains a single folder like node-v22.16.0-win-x64
-    $inner = Get-ChildItem "$env:TEMP\node_tmp" -Directory | Select-Object -First 1
-    Move-Item $inner.FullName $NodeInstDir -Force
-    Remove-Item "$env:TEMP\node_tmp" -Recurse -Force -ErrorAction SilentlyContinue
-    Remove-Item $zipPath -Force -ErrorAction SilentlyContinue
-
-    # Add to PATH (permanent + current session)
-    $currentPath = [System.Environment]::GetEnvironmentVariable('Path','User')
-    if ($currentPath -notlike "*$NodeInstDir*") {
-        [System.Environment]::SetEnvironmentVariable('Path', "$currentPath;$NodeInstDir", 'User')
+    Write-Info "Installing Node.js (silent MSI)..."
+    $proc = Start-Process -FilePath 'msiexec.exe' -ArgumentList '/i',$msiPath,'/qn','/norestart' -Wait -PassThru
+    Remove-Item $msiPath -Force -ErrorAction SilentlyContinue
+    if ($proc.ExitCode -ne 0) {
+        Die "Node.js MSI install failed (exit code $($proc.ExitCode)). Install Node $MinNodeMajor+ manually from https://nodejs.org/en/download."
     }
-    $env:Path = "$env:Path;$NodeInstDir"
+
+    # MSI installer updates Machine PATH automatically; refresh current session
+    Update-Path
 
     if (-not (Test-NodeOk)) {
-        Die "Node.js installed but not working. Open a NEW PowerShell window and run 'claude'."
+        Die "Node.js installed but not on PATH yet. Open a NEW PowerShell window and run 'claude'."
     }
     Write-Ok "Node.js installed: $(& node -v)"
 }

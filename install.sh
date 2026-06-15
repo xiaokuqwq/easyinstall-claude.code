@@ -106,6 +106,12 @@ main() {
   detect_arch
   info "Platform: $OS/$ARCH"
 
+  if command -v claude >/dev/null 2>&1; then
+    ok "Claude Code already installed: $(claude --version 2>/dev/null || echo 'present')"
+    info "Nothing to do. To upgrade, run: npm update -g $PKG"
+    exit 0
+  fi
+
   if is_china; then CHINA=1; else CHINA=0; fi
   if [ "$CHINA" = "1" ]; then
     ok "China IP detected — using mirror sources."

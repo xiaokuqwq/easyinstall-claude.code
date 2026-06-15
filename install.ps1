@@ -101,6 +101,14 @@ function Install-Node {
 $arch = Get-Arch
 Write-Info "Platform: windows/$arch"
 
+if (Get-Command claude -ErrorAction SilentlyContinue) {
+    $ver = (& claude --version) 2>$null
+    if (-not $ver) { $ver = 'present' }
+    Write-Ok "Claude Code already installed: $ver"
+    Write-Info "Nothing to do. To upgrade, run: npm update -g $Pkg"
+    exit 0
+}
+
 $script:China = Test-China
 if ($script:China) {
     Write-Ok  "China IP detected — using mirror sources."

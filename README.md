@@ -17,13 +17,13 @@
 ### Linux / macOS
 
 ```bash
-bash install.sh
+curl -fsSL https://raw.githubusercontent.com/xiaokuqwq/easyinstall-claude.code/main/install.sh | bash
 ```
 
 ### Windows (PowerShell)
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File install.ps1
+irm https://raw.githubusercontent.com/xiaokuqwq/easyinstall-claude.code/main/install.ps1 | iex
 ```
 
 安装完成后,在新终端运行:
@@ -79,13 +79,13 @@ Cross-platform scripts that install [Claude Code](https://www.npmjs.com/package/
 ### Linux / macOS
 
 ```bash
-bash install.sh
+curl -fsSL https://raw.githubusercontent.com/xiaokuqwq/easyinstall-claude.code/main/install.sh | bash
 ```
 
 ### Windows (PowerShell)
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File install.ps1
+irm https://raw.githubusercontent.com/xiaokuqwq/easyinstall-claude.code/main/install.ps1 | iex
 ```
 
 After install, open a new terminal and run:
